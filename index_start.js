@@ -139,7 +139,8 @@ scene.add(hemiLight);
 
 
 function animate(t = 0) {
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animate); // check what it does
+   
     mesh.rotation.y = t * 0.0001;
     torusMesh.rotation.x = t * 0.001;
     torusMesh.rotation.y = t * 0.001;
