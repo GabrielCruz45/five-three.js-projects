@@ -3,6 +3,7 @@
 // TODO 2: experiment with different animations.
 // TODO 3: experimetn with OrbitControls.
 
+
 import * as THREE from "three"
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
 
@@ -135,34 +136,49 @@ scene.add(hemiLight);
 
 
 
+const clock = new THREE.Clock();
+let transition;
+init();
+animate();
 
 
-function animate(t = 0) {
-    requestAnimationFrame(animate); // check what it does
-   
-    mesh.rotation.y = t * 0.0001;
-    torusMesh.rotation.x = t * 0.001;
-    torusMesh.rotation.y = t * 0.001;
-    torusMesh.rotation.z = t * 0.0001;
+function init() {
+    const container = document.getElementById("container");
 
-    torusKnot_mesh.rotation.x = t * -0.001;
-    torusKnot_mesh.rotation.y = t * -0.001;
-    torusKnot_mesh.rotation.z = t * -0.0001;
-    
-    torusKnot_mesh_two.rotation.x = t * 0.001;
-    torusKnot_mesh_two.rotation.y = t * 0.001;
-    torusKnot_mesh_two.rotation.z = t * 0.0001;
+    const renderer = new THREE.WebGLRenderer({ antialias: true});
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
 
-    torusKnot_mesh.position.x = Math.cos(t * 0.001);
-    torusKnot_mesh.position.y = Math.cos(t * 0.001);
-    torusKnot_mesh.position.z = Math.sin(t * 0.001) * 1.1;
-    
-    torusKnot_mesh_two.position.x = Math.sin(t * 0.0005);
-    torusKnot_mesh_two.position.y = Math.sin(t * 0.0005);
-    torusKnot_mesh_two.position.z = Math.sin(t * 0.001) * 0.7;
-    
 
-    renderer.render(scene, camera);
-    controls.update();
+    const materialA = new THREE.MeshBasicMaterial({
+        color: 0x00FF00,
+        wireframe: true,
+    });
+
+    const materialB = new THREE.MeshBasicMaterial({
+        color: 0xFF9900,
+        flatShading: true,
+    });
+
+
+    const sceneA = getFXScene({
+        renderer,
+        material: materialA,
+        clearColor: 0x000000
+    });
+
+    const sceneB = getFXScene({
+        renderer,
+        material: materialB,
+        clearColor: 0x000000,
+        needsAnimatedColor: true,
+    });
+
+    transition = getTransition({ renderer, sceneA, sceneB });
 };
-animate(); // don't forget to call the animate function!!
+
+function animate() {
+    requestAnimationFrame(animate);
+    transition.render(clock.getDelta);
+}
